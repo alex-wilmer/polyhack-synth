@@ -1,9 +1,9 @@
 import './index.css'
 import AudioKeys from 'audiokeys'
 
+let ctx = new AudioContext()
 let keyboard = new AudioKeys()
 let shapes = ["sine", "square", "sawtooth", "triangle"]
-let ctx = new AudioContext()
 
 let frequency = 1000
 let sources = {}
@@ -13,7 +13,7 @@ window.onmousemove = event => {
     `hsl(${event.clientX / 3}, 70%, 70%)`
 
   frequency = event.clientX
-  
+
   Object.values(sources).forEach(src =>
     src.osc.frequency.value = frequency
   )
