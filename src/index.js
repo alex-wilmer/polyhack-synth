@@ -7,15 +7,15 @@ let ctx = new AudioContext()
 // osc.connect(ctx.destination)
 
 let frequency = 1000
-let oscillators = {}
+let sources = {}
 // window.onmousemove = event =>
 //   osc && (osc.frequency.value = event.clientX)
 window.onmousemove = event => {
   document.body.style.backgroundColor =
     `hsl(${event.clientX / 3}, 70%, 70%)`
   frequency = event.clientX
-  Object.values(oscillators).forEach(osc =>
-    osc.frequency.value = frequency
+  Object.values(sources).forEach(src =>
+    src.osc.frequency.value = frequency
   )
 }
 
@@ -27,18 +27,36 @@ window.onmousemove = event => {
 
 
 window.onkeydown = event => {
-  if (!oscillators[event.key]) {
+  if (!sources[event.key]) {
     let osc = ctx.createOscillator()
+    let gain = ctx.createGain()
+
+    gain.gain.value = 0
+    gain.gain.linearRampToValueAtTime(
+      1,
+      ctx.currentTime + 0.1
+    )
+
     osc.frequency.value = frequency
     osc.type = shapes[event.keyCode % shapes.length]
-    osc.connect(ctx.destination)
+
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+
     osc.start()
 
-    oscillators[event.key] = osc
+    sources[event.key] = {
+      osc,
+      gain
+    }
   }
 }
 
 window.onkeyup = event => {
-  oscillators[event.key].stop()
-  delete oscillators[event.key]
+  sources[event.key].gain.gain.linearRampToValueAtTime(
+    0,
+    ctx.currentTime + 0.4
+  )
+  sources[event.key].osc.stop(ctx.currentTime + 0.5)
+  delete sources[event.key]
 }
