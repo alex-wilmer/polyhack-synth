@@ -7,4 +7,4 @@ npm i
 npm start
 ```
 
-Then got to localhost:3000 and play around.
+Then go to localhost:3000 and play around.
